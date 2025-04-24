@@ -33,9 +33,9 @@ import (
 
 func TestFastFloat_Encode(t *testing.T) {
     var buf [64]byte
-    assert.Equal(t, "0"                         , string(buf[:f64toa(&buf[0], 0)]))
-    assert.Equal(t, "-0"                         , string(buf[:f64toa(&buf[0], math.Float64frombits(0x8000000000000000))]))
-    assert.Equal(t, "12340000000"               , string(buf[:f64toa(&buf[0], 1234e7)]))
+    assert.Equal(t, "0.0"                         , string(buf[:f64toa(&buf[0], 0)]))
+    assert.Equal(t, "-0.0"                         , string(buf[:f64toa(&buf[0], math.Float64frombits(0x8000000000000000))]))
+    assert.Equal(t, "12340000000.0"               , string(buf[:f64toa(&buf[0], 1234e7)]))
     assert.Equal(t, "12.34"                     , string(buf[:f64toa(&buf[0], 1234e-2)]))
     assert.Equal(t, "0.001234"                  , string(buf[:f64toa(&buf[0], 1234e-6)]))
     assert.Equal(t, "1e+30"                      , string(buf[:f64toa(&buf[0], 1e30)]))
@@ -43,7 +43,7 @@ func TestFastFloat_Encode(t *testing.T) {
     assert.Equal(t, "1.234e+308"                 , string(buf[:f64toa(&buf[0], 1234e305)]))
     assert.Equal(t, "1.234e-317"                , string(buf[:f64toa(&buf[0], 1234e-320)]))
     assert.Equal(t, "1.7976931348623157e+308"    , string(buf[:f64toa(&buf[0], 1.7976931348623157e308)]))
-    assert.Equal(t, "-12340000000"              , string(buf[:f64toa(&buf[0], -1234e7)]))
+    assert.Equal(t, "-12340000000.0"              , string(buf[:f64toa(&buf[0], -1234e7)]))
     assert.Equal(t, "-12.34"                    , string(buf[:f64toa(&buf[0], -1234e-2)]))
     assert.Equal(t, "-0.001234"                 , string(buf[:f64toa(&buf[0], -1234e-6)]))
     assert.Equal(t, "-1e+30"                     , string(buf[:f64toa(&buf[0], -1e30)]))
