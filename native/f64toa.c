@@ -367,8 +367,10 @@ int f64toa(char *out, double fp) {
     p += neg;
 
     /* simple case of 0.0 */
-    if ((raw << 1) ==  0) {
-        *p++ = '0';
+    if ((raw << 1) == 0) {
+        *p++ = '0';         // integer digit
+        *p++ = '.';         // decimal point
+        *p++ = '0';         // fractional digit
         return p - out;
     }
 
@@ -382,6 +384,8 @@ int f64toa(char *out, double fp) {
         if (q <= 0 && q >= -F64_SIG_BITS && is_div_pow2(c, -q)) {
             uint64_t u = c >> -q;
             p = format_integer(u, p, ctz10(u));
+            *p++ = '.';         // always add a decimal point
+            *p++ = '0';         // always add one fractional zero
             return p - out;
         }
 
