@@ -92,7 +92,7 @@ var optionalsExpected = `{
  "omitempty": 0,
  "slr": null,
  "mr": {},
- "fr": 0,
+ "fr": 0.0,
  "br": false,
  "ur": 0,
  "str": {},
@@ -625,7 +625,7 @@ func TestNilMarshal(t *testing.T) {
 		want string
 	}{
 		{v: nil, want: `null`},
-		{v: new(float64), want: `0`},
+		{v: new(float64), want: `0.0`},
 		{v: []interface{}(nil), want: `null`},
 		{v: []string(nil), want: `null`},
 		{v: map[string]string(nil), want: `null`},
