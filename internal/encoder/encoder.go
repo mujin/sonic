@@ -74,6 +74,9 @@ const (
 
     // Encode Infinity or Nan float into `null`, instead of returning an error.
     EncodeNullForInfOrNan Options = 1 << alg.BitEncodeNullForInfOrNan
+
+    // Replace null character with replacement character "\ufffd" when encoding.
+    ReplaceNulls Options = 1 << alg.BitReplaceNulls
 )
 
 // Encoder represents a specific set of encoder configurations.
@@ -163,7 +166,7 @@ func (enc *Encoder) SetIndent(prefix, indent string) {
 // Quote returns the JSON-quoted version of s.
 func Quote(s string) string {
     buf := make([]byte, 0, len(s)+2)
-    buf = alg.Quote(buf, s, false)
+    buf = alg.Quote(buf, s, false, false)
     return rt.Mem2Str(buf)
 }
 

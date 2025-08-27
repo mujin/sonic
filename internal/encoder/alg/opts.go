@@ -26,6 +26,7 @@ const (
     BitNoValidateJSONMarshaler
     BitNoEncoderNewline 
     BitEncodeNullForInfOrNan 
+    BitReplaceNulls
 	
     BitPointerValue = 63
 )

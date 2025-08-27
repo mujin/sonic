@@ -248,7 +248,7 @@ static always_inline uint8_t escape_mask4(const char *sp) {
     return _EscTab[*(uint8_t *)(sp)] | (_EscTab[*(uint8_t *)(sp + 1)] << 1) | (_EscTab[*(uint8_t *)(sp + 2)] << 2) | (_EscTab[*(uint8_t *)(sp + 3)]  << 3);
 }
 
-static always_inline ssize_t memcchr_quote_unsafe(const char *sp, ssize_t nb, char *dp, const quoted_t * tab) {
+static always_inline ssize_t memcchr_quote_unsafe(const char *sp, ssize_t nb, char *dp, const quoted_t * tab, const char *replacement) {
     uint32_t     mm;
     const char * ds = dp;
     size_t cn = 0;
@@ -365,7 +365,12 @@ escape:
          * Note: dp always has at least 8 bytes (MAX_ESCAPED_BYTES) here.
          * so, we not use memcpy_p8(dp, tab[ch].s, nc);
          */
-        *(uint64_t *)dp = *(const uint64_t *)tab[ch].s;
+        if (unlikely(replacement && ch == '\0')) {
+            nc = 3;
+            *(uint64_t *)dp = *(const uint64_t *)replacement;
+        } else {
+            *(uint64_t *)dp = *(const uint64_t *)tab[ch].s;
+        }
         sp++;
         nb--;
         dp += nc;

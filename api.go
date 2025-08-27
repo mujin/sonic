@@ -97,6 +97,9 @@ type Config struct {
 
     // CaseSensitive indicates that the decoder should not ignore the case of object keys.
     CaseSensitive bool
+
+    // Replace null character with replacement character "\ufffd" when encoding.
+    ReplaceNulls bool
 }
  
 var (

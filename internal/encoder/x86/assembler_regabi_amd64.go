@@ -713,6 +713,13 @@ func (self *Assembler) encode_string(doubleQuote bool) {
 		self.Emit("MOVL", jit.Imm(types.F_DOUBLE_UNQUOTE), _R8) // MOVL ${types.F_DOUBLE_UNQUOTE}, R8
 	}
 
+	/* set ReplaceNulls flag */
+	self.Emit("BTQ"  , jit.Imm(types.B_REPLACE_NULLS), _ARG_fv) // BTQ    ${types.B_REPLACE_NULLS}, AX
+	self.Emit("XORL" , _AX, _AX)                                     // XORL   AX, AX
+	self.Emit("SETCC", _AX)                                          // SETCC  AX
+	self.Emit("SHLQ" , jit.Imm(types.B_REPLACE_NULLS), _AX)     // SHLQ   ${types.B_REPLACE_NULLS}, AX
+	self.Emit("ORQ"  , _AX, _R8)                                    // ORQ    AX, R8
+
 	/* call the native quoter */
 	self.call_c(_F_quote)           // CALL  quote
 	self.Emit("ADDQ", _VAR_dn, _RL) // ADDQ  dn, RL

@@ -74,6 +74,9 @@ const (
     // EncodeNullForInfOrNan encodes Infinity or NaN float values as 'null'
     // instead of returning an error.
     EncodeNullForInfOrNan Options = encoder.EncodeNullForInfOrNan
+
+    // Replace null character with replacement character "\ufffd" when encoding.
+    ReplaceNulls Options = encoder.ReplaceNulls
 )
 
 
