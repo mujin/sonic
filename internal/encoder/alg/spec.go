@@ -156,7 +156,7 @@ func HtmlEscape(dst []byte, src []byte) []byte {
 
 func F64toa(buf []byte, v float64) ([]byte) {
 	if v == 0 {
-		return append(buf, '0')
+		return append(buf, []byte("0.0")...)
 	}
 	buf = rt.GuardSlice2(buf, 64)
 	ret := native.F64toa((*byte)(rt.IndexByte(buf, len(buf))), v)
