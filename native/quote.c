@@ -4,6 +4,7 @@ ssize_t quote(const char *sp, ssize_t nb, char *dp, ssize_t *dn, uint64_t flags)
     ssize_t          nd = *dn;
     const char *     ds = dp;
     const char *     ss = sp;
+    const char *     replacement = NULL;
     const quoted_t * tab;
 
     /* select quoting table */
@@ -13,8 +14,13 @@ ssize_t quote(const char *sp, ssize_t nb, char *dp, ssize_t *dn, uint64_t flags)
         tab = _DoubleQuoteTab;
     }
 
+    if (unlikely(flags & F_REPLACE_NULLS)) {
+        // UTF-8 encoding of U+FFFD is 0xEF 0xBF 0xBD
+        replacement = "\xEF\xBF\xBD";
+    } 
+
     if (*dn >= nb * MAX_ESCAPED_BYTES) {
-        *dn = memcchr_quote_unsafe(sp, nb, dp, tab);
+        *dn = memcchr_quote_unsafe(sp, nb, dp, tab, replacement);
         return nb;
     }
 
@@ -53,7 +59,13 @@ ssize_t quote(const char *sp, ssize_t nb, char *dp, ssize_t *dn, uint64_t flags)
             }
 
             /* copy the quoted value */
-            memcpy_p8(dp, tab[ch].s, nc);
+            if (unlikely(replacement && ch == '\0')) {
+                nc = 3;
+                memcpy_p8(dp, replacement, nc);
+            } else {
+                memcpy_p8(dp, tab[ch].s, nc);
+            }
+
             sp++;
             nb--;
             dp += nc;

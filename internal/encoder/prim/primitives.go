@@ -92,7 +92,8 @@ func EncodeTextMarshaler(buf *[]byte, val encoding.TextMarshaler, opt uint64) er
 			*buf = append(*buf, ret...)
 			return nil
 		}
-		*buf = alg.Quote(*buf, rt.Mem2Str(ret), false)
+		replaceNulls := opt&(1<<alg.BitReplaceNulls) != 0
+		*buf = alg.Quote(*buf, rt.Mem2Str(ret), false, replaceNulls)
 		return nil
 	}
 }

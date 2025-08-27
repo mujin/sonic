@@ -120,7 +120,7 @@ func BenchmarkQuote(b *testing.B) {
 				b.Run("sonic-"+strconv.Itoa(len(src)), func(b *testing.B) {
 					b.ResetTimer()
 					for i := 0; i < b.N; i++ {
-						_ = Quote(buf, src, false)
+						_ = Quote(buf, src, false, false)
 					}
 				})
 				b.Run("std-"+strconv.Itoa(len(src)), func(b *testing.B) {
@@ -189,9 +189,10 @@ func BenchmarkEscapeHTML(b *testing.B) {
 
 func TestQuote(t *testing.T) {
 	type args struct {
-		buf    []byte
-		val    string
-		double bool
+		buf          []byte
+		val          string
+		double       bool
+		replaceNulls bool
 	}
 	tests := []struct {
 		name string
@@ -207,10 +208,30 @@ func TestQuote(t *testing.T) {
 			},
 			want: []byte{0, 0, 0, 0, 0, 0, 0, '"', '1', '"'},
 		},
+		{
+			name: "empty replace nulls",
+			args: args{
+				buf:          make([]byte, 7, 8),
+				val:          "1",
+				double:       false,
+				replaceNulls: true,
+			},
+			want: []byte{0, 0, 0, 0, 0, 0, 0, '"', '1', '"'},
+		},
+		{
+			name: "replace nulls",
+			args: args{
+				buf:          make([]byte, 1, 8),
+				val:          "a\u0000b\u0000c\u0000d",
+				double:       false,
+				replaceNulls: true,
+			},
+			want: []byte("\x00\"a\uFFFDb\uFFFDc\uFFFDd\""),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Quote(tt.args.buf, tt.args.val, tt.args.double); !reflect.DeepEqual(got, tt.want) {
+			if got := Quote(tt.args.buf, tt.args.val, tt.args.double, tt.args.replaceNulls); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Quote() = %v, want %v", got, tt.want)
 			}
 		})

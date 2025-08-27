@@ -21,6 +21,7 @@
 
 #define F_DBLUNQ        (1 << 0)
 #define F_UNIREP        (1 << 1)
+#define F_REPLACE_NULLS (1 << 2)
 #define F_NO_VALIDATE_JSON (1 << 6)
 
 #define VS_NULL         0x6c6c756e      // 'null' in little endian
