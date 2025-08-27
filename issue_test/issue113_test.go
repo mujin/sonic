@@ -94,7 +94,7 @@ var issue13ExpectedNonemptyOpt = `{
   "0": "zero"
  },
  "map": {
-  "key": 0
+  "key": 0.0
  },
  "slice0": [
   0

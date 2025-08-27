@@ -19,12 +19,13 @@
 package generic_test
 
 import (
-    `testing`
-    `reflect`
-    
-    `github.com/bytedance/sonic`
-    `github.com/bytedance/sonic/option`
-    `github.com/bytedance/sonic/ast`
+	"reflect"
+	"testing"
+
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
+	"github.com/bytedance/sonic/option"
+	"github.com/stretchr/testify/assert"
 )
 
 type Str interface {
@@ -157,4 +158,35 @@ func TestGenericAPI(t *testing.T) {
         t.Fatal(err)
     }
     t.Log(f)
+}
+
+func TestFloatAlwaysEncodeWithDecimal(t *testing.T) {
+	for index, testCase := range []struct {
+		value    float64
+		expected string
+	}{
+		{0, "0.0"},
+		// {math.Float64frombits(0x8000000000000000), "-0.0"},
+		{1234e7, "12340000000.0"},
+		{1234e-2, "12.34"},
+		{1234e-6, "0.001234"},
+		{1e30, "1e+30"},
+		{1234e30, "1.234e+33"},
+		{1234e305, "1.234e+308"},
+		{1234e-320, "1.234e-317"},
+		{1.7976931348623157e308, "1.7976931348623157e+308"},
+		{-1234e7, "-12340000000.0"},
+		{-1234e-2, "-12.34"},
+		{-1234e-6, "-0.001234"},
+		{-1e30, "-1e+30"},
+		{-1234e30, "-1.234e+33"},
+		{-1234e305, "-1.234e+308"},
+		{-1234e-320, "-1.234e-317"},
+	} {
+		result, err := marshalBasic(testCase.value)
+		if err != nil {
+			t.Fatalf("case %d marsha(%f) failed: %s", index, testCase.value, err)
+		}
+		assert.Equal(t, testCase.expected, string(result))
+	}
 }
