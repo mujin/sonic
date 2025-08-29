@@ -366,8 +366,10 @@ escape:
          * so, we not use memcpy_p8(dp, tab[ch].s, nc);
          */
         if (unlikely(replacement && ch == '\0')) {
-            nc = 3;
-            *(uint64_t *)dp = *(const uint64_t *)replacement;
+            nc = 0;
+            for (const char *r = replacement; *r;) {
+                dp[nc++] = *r++;
+            }
         } else {
             *(uint64_t *)dp = *(const uint64_t *)tab[ch].s;
         }
