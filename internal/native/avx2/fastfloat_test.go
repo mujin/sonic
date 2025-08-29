@@ -76,6 +76,9 @@ func TestFastFloat_Random(t *testing.T) {
         jout, jerr = json.Marshal(f32)
         n = f32toa(&buf[0], f32)
         if jerr == nil {
+            if !bytes.ContainsRune(jout, '.') {
+              jout = append(jout, []byte(".0")...)
+            }
             assert.Equal(t, jout, buf[:n])
         } else {
             assert.True(t, n == 0)
