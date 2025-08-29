@@ -210,6 +210,27 @@ func TestEncoder_EscapeHTML(t *testing.T) {
     }
 }
 
+func TestEncoder_FloatWithDecimalPoint(t *testing.T) {
+	// test data from libfuzzer
+	for index, test := range []struct {
+		input  interface{}
+		expect string
+	}{
+		{float32(0), "0.0"},
+		{float32(1), "1.0"},
+		{float32(1000000), "1000000.0"},
+		{float64(0), "0.0"},
+		{float64(1), "1.0"},
+		{float64(1000000), "1000000.0"},
+	} {
+		buf, err := Encode(test.input, 0)
+		if err != nil {
+			t.Fatalf("case %d encoder replace null failed: %s", index, err)
+		}
+		require.Equal(t, test.expect, string(buf), "case %d", index)
+	}
+}
+
 func TestEncoder_ReplaceNulls(t *testing.T) {
 	// test data from libfuzzer
 	for index, test := range []struct {

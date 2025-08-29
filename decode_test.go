@@ -1643,7 +1643,7 @@ var pallValueIndent = `{
     "Uint32": 0,
     "Uint64": 0,
     "Uintptr": 0,
-    "Float32": 0,
+    "Float32": 0.0,
     "Float64": 0.0,
     "bar": "",
     "bar2": "",

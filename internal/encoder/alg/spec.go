@@ -173,7 +173,7 @@ func F64toa(buf []byte, v float64) ([]byte) {
 
 func F32toa(buf []byte, v float32) ([]byte) {
 	if v == 0 {
-		return append(buf, '0')
+		return append(buf, []byte("0.0")...)
 	}
 	buf = rt.GuardSlice2(buf, 64)
 	ret := native.F32toa((*byte)(rt.IndexByte(buf, len(buf))), v)
