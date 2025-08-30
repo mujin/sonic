@@ -800,6 +800,11 @@ func (self *_Assembler) escape_string() {
     self.Emit("BTQ"  , jit.Imm(_F_disable_urc), _ARG_fv)        // BTQ    ${_F_disable_urc}, fv
     self.Emit("SETCC", _R8)                                     // SETCC  R8
     self.Emit("SHLQ" , jit.Imm(types.B_UNICODE_REPLACE), _R8)   // SHLQ   ${types.B_UNICODE_REPLACE}, R8
+    self.Emit("XORL" , _AX, _AX)                                // XORL   AX, AX
+    self.Emit("BTQ"  , jit.Imm(_F_replace_nulls), _ARG_fv)      // BTQ    ${_F_replace_nulls}, fv
+    self.Emit("SETCS", _AX)                                     // SETCC  AX
+    self.Emit("SHLQ" , jit.Imm(types.B_REPLACE_NULLS), _AX)     // SHLQ   ${types.B_REPLACE_NULLS}, AX
+    self.Emit("ORQ"  , _AX, _R8)                                // ORQ    AX, R8
     self.call_c(_F_unquote)                                       // CALL   unquote
     self.Emit("MOVQ" , _VAR_bs_n, _SI)                                  // MOVQ   ${n}, SI
     self.Emit("ADDQ" , jit.Imm(1), _SI)                         // ADDQ   $1, SI
@@ -826,6 +831,11 @@ func (self *_Assembler) escape_string_twice() {
     self.Emit("XORL" , _AX, _AX)                                    // XORL   AX, AX
     self.Emit("SETCC", _AX)                                         // SETCC  AX
     self.Emit("SHLQ" , jit.Imm(types.B_UNICODE_REPLACE), _AX)       // SHLQ   ${types.B_UNICODE_REPLACE}, AX
+    self.Emit("ORQ"  , _AX, _R8)                                    // ORQ    AX, R8
+    self.Emit("XORL" , _AX, _AX)                                    // XORL   AX, AX
+    self.Emit("BTQ"  , jit.Imm(_F_replace_nulls), _ARG_fv)          // BTQ    ${_F_replace_nulls}, fv
+    self.Emit("SETCS", _AX)                                         // SETCC  AX
+    self.Emit("SHLQ" , jit.Imm(types.B_REPLACE_NULLS), _AX)         // SHLQ   ${types.B_REPLACE_NULLS}, AX
     self.Emit("ORQ"  , _AX, _R8)                                    // ORQ    AX, R8
     self.call_c(_F_unquote)                                         // CALL   unquote
     self.Emit("MOVQ" , _VAR_bs_n, _SI)                              // MOVQ   ${n}, SI

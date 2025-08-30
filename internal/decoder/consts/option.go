@@ -17,6 +17,8 @@ const (
     F_allow_control   = types.B_ALLOW_CONTROL
     F_no_validate_json = types.B_NO_VALIDATE_JSON
     F_case_sensitive = 7
+
+    F_replace_nulls  = 15
 )
 
 type Options uint64
@@ -30,6 +32,8 @@ const (
     OptionValidateString   Options = 1 << F_validate_string
     OptionNoValidateJSON   Options = 1 << F_no_validate_json
     OptionCaseSensitive    Options = 1 << F_case_sensitive
+
+    OptionReplaceNulls     Options = 1 << F_replace_nulls
 )
 
 const (

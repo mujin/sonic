@@ -95,6 +95,9 @@ func (cfg Config) Froze() API {
     if cfg.CaseSensitive {
         api.decoderOpts |= decoder.OptionCaseSensitive
     }
+    if cfg.ReplaceNulls {
+        api.decoderOpts |= decoder.OptionReplaceNulls
+    }
     return api
 }
 

@@ -468,6 +468,11 @@ func (self *_ValueDecoder) compile() {
     self.Emit("BTQ"  , jit.Imm(_F_disable_urc), _VAR_df)        // BTQ   ${_F_disable_urc}, fv
     self.Emit("SETCC", _R8)                                     // SETCC R8
     self.Emit("SHLQ" , jit.Imm(types.B_UNICODE_REPLACE), _R8)   // SHLQ  ${types.B_UNICODE_REPLACE}, R8
+    self.Emit("XORL" , _AX, _AX)                                // XORL   AX, AX
+    self.Emit("BTQ"  , jit.Imm(_F_replace_nulls), _VAR_df)      // BTQ    ${_F_replace_nulls}, fv
+    self.Emit("SETCS", _AX)                                     // SETCC  AX
+    self.Emit("SHLQ" , jit.Imm(types.B_REPLACE_NULLS), _AX)     // SHLQ   ${types.B_REPLACE_NULLS}, AX
+    self.Emit("ORQ"  , _AX, _R8)                                // ORQ    AX, R8
 
     /* unquote the string, with R9 been preserved */
     self.Emit("MOVQ", _R9, _VAR_R9)             // SAVE R9

@@ -286,6 +286,34 @@ func TestDecoder_Binding(t *testing.T) {
     assert.Equal(t, _BindingValue, v, 0)
 }
 
+func TestDecoder_ReplaceNulls(t *testing.T) {
+	for index, test := range []struct {
+		opts   Options
+		input  string
+		expect interface{}
+	}{
+		{0, `"hello\u0000\u0000world"`, "hello\x00\x00world"},
+		{0, `"hello\u0000\uFFFDworld"`, "hello\x00\uFFFDworld"},
+		{OptionReplaceNulls, `"hello\u0000\u0000world"`, "hello\x00\x00world"},
+		{OptionReplaceNulls, `"hello\u0000\uFFFDworld"`, "hello\x00\x00world"},
+		{OptionReplaceNulls, "\"hello\uFFFD\uFFFDworld\"", "hello\x00\x00world"},
+		{OptionReplaceNulls, "\"hello\uFFFD\\u0001world\"", "hello\x00\x01world"},
+		{0, `["foo\u0000","bar\u0000"]`, []interface{}{"foo\x00", "bar\x00"}},
+		{0, `{"foo\u0000":"bar\u0000"}`, map[string]interface{}{"foo\x00": "bar\x00"}},
+		{OptionReplaceNulls, `["foo\uFFFD","bar\uFFFD"]`, []interface{}{"foo\x00", "bar\x00"}},
+		{OptionReplaceNulls, "[\"foo\uFFFD\",\"bar\uFFFD\"]", []interface{}{"foo\x00", "bar\x00"}},
+		{OptionReplaceNulls, `{"foo\uFFFD":"bar\uFFFD"}`, map[string]interface{}{"foo\x00": "bar\x00"}},
+		{OptionReplaceNulls, "{\"foo\uFFFD\":\"bar\uFFFD\"}", map[string]interface{}{"foo\x00": "bar\x00"}},
+	} {
+		decoder := NewDecoder(test.input)
+		decoder.SetOptions(test.opts)
+		var val interface{}
+		err := decoder.Decode(&val)
+		assert.NoError(t, err, "case %d encoder replace null failed: %s", index, err)
+		assert.Equal(t, test.expect, val, "case %d", index)
+	}
+}
+
 func BenchmarkDecoder_Generic_Sonic(b *testing.B) {
     var w interface{}
     _, _ = decode(TwitterJson, &w, true)

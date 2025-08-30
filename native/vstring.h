@@ -20,4 +20,6 @@ static always_inline void vstring_1(const GoString *src, long *p, JsonState *ret
     ret->iv = i;
     ret->vt = V_STRING;
     ret->ep = v >= e ? -1 : v;
+    // TODO: return the first escape/replacement position
+    ret->ep = i;
 }
