@@ -52,7 +52,6 @@ const (
     // for native.Unquote() flags
     B_DOUBLE_UNQUOTE  = 0
     B_UNICODE_REPLACE = 1
-    B_REPLACE_NULLS = 2
 
     // for native.Value() flags
     B_USE_NUMBER      = 1
@@ -61,16 +60,20 @@ const (
 
     // for native.SkipOne() flags
     B_NO_VALIDATE_JSON= 6
+
+	  // for replacement between \u0000 and \uFFFD
+    B_REPLACE_NULLS = 15
 )
 
 const (
     F_DOUBLE_UNQUOTE  = 1 << B_DOUBLE_UNQUOTE
     F_UNICODE_REPLACE = 1 << B_UNICODE_REPLACE
-    F_REPLACE_NULLS = 1 << B_REPLACE_NULLS
 
     F_USE_NUMBER      = 1 << B_USE_NUMBER
     F_VALIDATE_STRING = 1 << B_VALIDATE_STRING
     F_ALLOW_CONTROL   = 1 << B_ALLOW_CONTROL
+
+    F_REPLACE_NULLS = 1 << B_REPLACE_NULLS
 )
 
 const (
