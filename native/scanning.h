@@ -898,7 +898,7 @@ static always_inline void vnumber_1(const GoString *src, long *p, JsonState *ret
         if (!is_overflow(man, sgn, exp10)) {
             ret->iv = (int64_t)man * sgn;
             // greater than INT64_MAX, use uint64 instead
-            if (man > (uint64_t)-1) {
+            if (man > (1ull << 63)) {
                 ret->uv = ret->iv;
             }
 

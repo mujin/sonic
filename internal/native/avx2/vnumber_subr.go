@@ -16,7 +16,7 @@ const (
 )
 
 const (
-    _size__vnumber = 8392
+    _size__vnumber = 8408
 )
 
 var (
@@ -28,15 +28,15 @@ var (
         {0xc, 32},
         {0xd, 40},
         {0x11, 48},
-        {0xcda, 136},
-        {0xcdb, 48},
-        {0xcdd, 40},
-        {0xcdf, 32},
-        {0xce1, 24},
-        {0xce3, 16},
-        {0xce4, 8},
-        {0xce8, 0},
-        {0x20c8, 136},
+        {0xcea, 136},
+        {0xceb, 48},
+        {0xced, 40},
+        {0xcef, 32},
+        {0xcf1, 24},
+        {0xcf3, 16},
+        {0xcf4, 8},
+        {0xcf8, 0},
+        {0x20d8, 136},
     }
 )
 
