@@ -135,6 +135,7 @@ typedef struct
     int64_t ep;
     char *dbuf;
     ssize_t dcap;
+    uint64_t uv;
 } JsonState;
 
 typedef struct
