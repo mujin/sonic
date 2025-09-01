@@ -287,9 +287,10 @@ func TestDecoder_Binding(t *testing.T) {
 }
 
 func TestDecoder_Integer(t *testing.T) {
-	input := `{"uint64":18446744073709551615,"float64":999999999999999900000,"a":-31,"b":-53,"c":-19}`
+	input := `{"uint64_max":18446744073709551615,"uint64_half":9223372036854775808,"float64":999999999999999900000,"a":-31,"b":-53,"c":-19}`
 	expected := map[string]interface{}{
-		"uint64": uint64(18446744073709551615),
+		"uint64_max": uint64(18446744073709551615),
+		"uint64_half": uint64(9223372036854775808),
 		"a":      int64(-31),
 		"b":      int64(-53),
 		"c":      int64(-19),
