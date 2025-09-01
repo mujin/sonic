@@ -629,6 +629,7 @@ static always_inline ssize_t advance_string(const GoString *src, long p, int64_t
     ret->vt = t;    \
     ret->dv = 0.0;  \
     ret->iv = 0;    \
+    ret->uv = 0;    \
     ret->ep = *p;
 
 #define check_eof()         \

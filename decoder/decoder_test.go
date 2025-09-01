@@ -286,6 +286,23 @@ func TestDecoder_Binding(t *testing.T) {
     assert.Equal(t, _BindingValue, v, 0)
 }
 
+func TestDecoder_Integer(t *testing.T) {
+	input := `{"uint64":18446744073709551615,"float64":999999999999999900000,"a":-31,"b":-53,"c":-19}`
+	expected := map[string]interface{}{
+		"uint64": uint64(18446744073709551615),
+		"a":      int64(-31),
+		"b":      int64(-53),
+		"c":      int64(-19),
+		"float64": float64(999999999999999900000.0),
+	}
+	decoder := NewDecoder(input)
+	decoder.SetOptions(OptionUseInt64)
+	var val interface{}
+	err := decoder.Decode(&val)
+	assert.NoError(t, err, "decoder decode integer failed: %s",  err)
+	assert.Equal(t, expected, val)
+}
+
 func TestDecoder_ReplaceNulls(t *testing.T) {
 	for index, test := range []struct {
 		opts   Options
