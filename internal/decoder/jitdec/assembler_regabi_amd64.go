@@ -70,7 +70,7 @@ const (
     _FP_args   = 72     // 72 bytes to pass and spill register arguments
     _FP_fargs  = 80     // 80 bytes for passing arguments to other Go functions
     _FP_saves  = 48     // 48 bytes for saving the registers before CALL instructions
-    _FP_locals = 144    // 144 bytes for local variables
+    _FP_locals = 152    // 144 bytes for local variables
 )
 
 const (
@@ -184,28 +184,29 @@ var (
     _VAR_st_Ep = jit.Ptr(_SP, _FP_fargs + _FP_saves + 24)
     _VAR_st_Db = jit.Ptr(_SP, _FP_fargs + _FP_saves + 32)
     _VAR_st_Dc = jit.Ptr(_SP, _FP_fargs + _FP_saves + 40)
+    _VAR_st_Uv = jit.Ptr(_SP, _FP_fargs + _FP_saves + 48)
 )
 
 var (
-    _VAR_ss_AX = jit.Ptr(_SP, _FP_fargs + _FP_saves + 48)
-    _VAR_ss_CX = jit.Ptr(_SP, _FP_fargs + _FP_saves + 56)
-    _VAR_ss_SI = jit.Ptr(_SP, _FP_fargs + _FP_saves + 64)
-    _VAR_ss_R8 = jit.Ptr(_SP, _FP_fargs + _FP_saves + 72)
-    _VAR_ss_R9 = jit.Ptr(_SP, _FP_fargs + _FP_saves + 80)
+    _VAR_ss_AX = jit.Ptr(_SP, _FP_fargs + _FP_saves + 56)
+    _VAR_ss_CX = jit.Ptr(_SP, _FP_fargs + _FP_saves + 64)
+    _VAR_ss_SI = jit.Ptr(_SP, _FP_fargs + _FP_saves + 72)
+    _VAR_ss_R8 = jit.Ptr(_SP, _FP_fargs + _FP_saves + 80)
+    _VAR_ss_R9 = jit.Ptr(_SP, _FP_fargs + _FP_saves + 88)
 )
 
 var (
-    _VAR_bs_p = jit.Ptr(_SP, _FP_fargs + _FP_saves + 88)
-    _VAR_bs_n = jit.Ptr(_SP, _FP_fargs + _FP_saves + 96)
-    _VAR_bs_LR = jit.Ptr(_SP, _FP_fargs + _FP_saves + 104)
+    _VAR_bs_p = jit.Ptr(_SP, _FP_fargs + _FP_saves + 96)
+    _VAR_bs_n = jit.Ptr(_SP, _FP_fargs + _FP_saves + 104)
+    _VAR_bs_LR = jit.Ptr(_SP, _FP_fargs + _FP_saves + 112)
 )
 
-var _VAR_fl = jit.Ptr(_SP, _FP_fargs + _FP_saves + 112)
+var _VAR_fl = jit.Ptr(_SP, _FP_fargs + _FP_saves + 120)
 
 var (
-    _VAR_et = jit.Ptr(_SP, _FP_fargs + _FP_saves + 120) // save mismatched type
-    _VAR_pc = jit.Ptr(_SP, _FP_fargs + _FP_saves + 128) // save skip return pc
-    _VAR_ic = jit.Ptr(_SP, _FP_fargs + _FP_saves + 136) // save mismatched position
+    _VAR_et = jit.Ptr(_SP, _FP_fargs + _FP_saves + 128) // save mismatched type
+    _VAR_pc = jit.Ptr(_SP, _FP_fargs + _FP_saves + 136) // save skip return pc
+    _VAR_ic = jit.Ptr(_SP, _FP_fargs + _FP_saves + 144) // save mismatched position
 )
 
 type _Assembler struct {
