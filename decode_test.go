@@ -2775,7 +2775,7 @@ type useInt64Test struct {
 
 type useFloatTest struct {
     in  string
-    out float64
+    out interface{}
 }
 
 var useinttest = []useInt64Test{
@@ -2793,11 +2793,11 @@ var useinttest = []useInt64Test{
 
 var usefloattest = []useFloatTest{
     // float64
-    {"-9223372036854775809", -9223372036854775809}, // int64 overflow
-    {"9223372036854775808", 9223372036854775808},   // int64 overflow
+    {"-9223372036854775809", float64(-9223372036854775809)}, // int64 overflow
+    {"9223372036854775808", uint64(9223372036854775808)},   // int64 overflow -> uint64
     {"1e2", 1e2},
     {"1e-20", 1e-20},
-    {"1.0", 1},
+    {"1.0", 1.0},
 }
 
 func TestUseInt64(t *testing.T) {

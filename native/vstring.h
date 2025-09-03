@@ -20,6 +20,11 @@ static always_inline void vstring_1(const GoString *src, long *p, JsonState *ret
     ret->iv = i;
     ret->vt = V_STRING;
     ret->ep = v >= e ? -1 : v;
-    // TODO: return the first escape/replacement position
-    ret->ep = i;
+    // when F_REPLACE_NULLS set and no escape sequence found, try to find the first replacement char position to force unquote
+    if (unlikely(flags & F_REPLACE_NULLS && ret->ep == -1)) {
+        ssize_t replacement_position = i + find_replacement(src->buf + i, e - i);
+        if (replacement_position < e) {
+            ret->ep = replacement_position;
+        }
+    }
 }

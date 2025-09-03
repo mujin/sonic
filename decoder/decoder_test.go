@@ -314,8 +314,10 @@ func TestDecoder_ReplaceNulls(t *testing.T) {
 	}{
 		{0, `"hello\u0000\u0000world"`, "hello\x00\x00world"},
 		{0, `"hello\u0000\uFFFDworld"`, "hello\x00\uFFFDworld"},
+		{0, `"hello\uFFFD\u0000world"`, "hello\uFFFD\x00world"},
 		{OptionReplaceNulls, `"hello\u0000\u0000world"`, "hello\x00\x00world"},
 		{OptionReplaceNulls, `"hello\u0000\uFFFDworld"`, "hello\x00\x00world"},
+		{OptionReplaceNulls, `"hello\uFFFD\u0000world"`, "hello\x00\x00world"},
 		{OptionReplaceNulls, "\"hello\uFFFD\uFFFDworld\"", "hello\x00\x00world"},
 		{OptionReplaceNulls, "\"hello\uFFFD\\u0001world\"", "hello\x00\x01world"},
 		{0, `["foo\u0000","bar\u0000"]`, []interface{}{"foo\x00", "bar\x00"}},
