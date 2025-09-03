@@ -285,9 +285,6 @@ static always_inline ssize_t find_replacement(const char* sp, ssize_t nb)
 
     /* handle the remaining bytes with scalar code */
     while (nb >= 3) {
-        if (sp[0] == '\xEF') {
-            return sp - ss;
-        }
         if (sp[0] == '\xEF' && sp[1] == '\xBF' && sp[2] == '\xBD') {
             return sp - ss;
         }
