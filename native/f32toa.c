@@ -217,6 +217,9 @@ static always_inline char* write_dec_f32(f32_dec dec, char* p) {
     char* end = p + dot;
     p = format_integer_u32(dec.sig, p, cnt);
     while (p < end) *p++ = '0';
+    *p++ = '.';         // always add a decimal point
+    *p++ = '0';         // always add one fractional zero
+    end += 2;
     return end;
 }
 
@@ -420,6 +423,8 @@ static always_inline f32_dec f32todec(uint32_t rsig, int32_t rexp, uint32_t c, i
     /* simple case of 0.0 */
     if ((raw << 1) ==  0) {
         *p++ = '0';
+        *p++ = '.';         // always add a decimal point
+        *p++ = '0';         // always add one fractional zero
         return p - out;
     }
 
@@ -432,6 +437,8 @@ static always_inline f32_dec f32todec(uint32_t rsig, int32_t rexp, uint32_t c, i
         if (q <= 0 && q >= -F32_SIG_BITS && is_div_pow2(c, -q)) {
             uint32_t u = c >> -q;
             p = format_integer_u32(u, p, ctz10_u32(u));
+            *p++ = '.';         // always add a decimal point
+            *p++ = '0';         // always add one fractional zero
             return p - out;
         }
     } else {

@@ -255,6 +255,9 @@ static always_inline char* write_dec(f64_dec dec, char* p) {
     char* end = p + dot;
     p = format_integer(dec.sig, p, cnt);
     while (p < end) *p++ = '0';
+    *p++ = '.';         // always add a decimal point
+    *p++ = '0';         // always add one fractional zero
+    end += 2;
     return end;
 }
 

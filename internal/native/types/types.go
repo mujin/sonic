@@ -60,6 +60,9 @@ const (
 
     // for native.SkipOne() flags
     B_NO_VALIDATE_JSON= 6
+
+	  // for replacement between \u0000 and \uFFFD
+    B_REPLACE_NULLS = 15
 )
 
 const (
@@ -69,6 +72,8 @@ const (
     F_USE_NUMBER      = 1 << B_USE_NUMBER
     F_VALIDATE_STRING = 1 << B_VALIDATE_STRING
     F_ALLOW_CONTROL   = 1 << B_ALLOW_CONTROL
+
+    F_REPLACE_NULLS = 1 << B_REPLACE_NULLS
 )
 
 const (

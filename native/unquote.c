@@ -186,6 +186,23 @@ ssize_t unquote(const char *sp, ssize_t nb, char *dp, ssize_t *ep, uint64_t flag
         *dp++ = (char)(0x80 | ((r0      ) & 0x3f));
     }
 
+    /* replace replacement char to null */
+    if (unlikely(flags & F_REPLACE_NULLS)) {
+        const char* const end = dp + nb;
+        const char* q = p;
+        dp = (char*)p;
+        while (q < end) {
+            // UTF-8 encoding of U+FFFD is 0xEF 0xBF 0xBD
+            if (q + 2 < end && q[0] == '\xEF' && q[1] == '\xBF' && q[2] == '\xBD') {
+                    *dp++ = '\0';
+                    q += 3;
+            } else {
+                *dp++ = *q++;
+            }
+        }
+        return dp - p;
+    }
+
     /* calculate the result length */
     return dp + nb - p;
 }

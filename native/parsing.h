@@ -232,6 +232,69 @@ static always_inline ssize_t memcchr_quote(const char *sp, ssize_t nb, char *dp,
     }
 }
 
+static always_inline ssize_t find_replacement(const char* sp, ssize_t nb)
+{
+    int64_t     mm;
+    const char* ss = sp;
+
+#if USE_AVX2
+    /* 32-byte loop, full store */
+    while (nb >= 32) {
+        __m256i vv = _mm256_loadu_si256((const void*)sp);
+        __m256i rv = _mm256_cmpeq_epi8(vv, _mm256_set1_epi8('\xEF'));
+
+        /* check for matches */
+        mm = _mm256_movemask_epi8(rv);
+        while (mm != 0) {
+            int i = __builtin_ctzll(mm);
+            mm = mm & (mm - 1);
+            if (i + 2 < nb && sp[i + 1] == '\xBF' && sp[i + 2] == '\xBD') {
+                return sp - ss + i;
+            }
+        }
+
+        /* move to next block */
+        sp += 32;
+        nb -= 32;
+    }
+
+    /* clear upper half to avoid AVX-SSE transition penalty */
+    _mm256_zeroupper();
+#endif
+
+    /* 16-byte loop, full store */
+    while (nb >= 16) {
+        __m128i vv = _mm_loadu_si128((const void*)sp);
+        __m128i rv = _mm_cmpeq_epi8(vv, _mm_set1_epi8('\xEF'));
+
+        /* check for matches */
+        mm = _mm_movemask_epi8(rv);
+        while (mm != 0) {
+            int i = __builtin_ctzll(mm);
+            mm = mm & (mm - 1);
+            // UTF-8 encoding of U+FFFD is 0xEF 0xBF 0xBD
+            if (i + 2 < nb && sp[i + 1] == '\xBF' && sp[i + 2] == '\xBD') {
+                return sp - ss + i;
+            }
+        }
+
+        /* move to next block */
+        sp += 16;
+        nb -= 16;
+    }
+
+    /* handle the remaining bytes with scalar code */
+    while (nb >= 3) {
+        if (sp[0] == '\xEF' && sp[1] == '\xBF' && sp[2] == '\xBD') {
+            return sp - ss;
+        }
+        ++sp;
+        --nb;
+    }
+
+    return sp - ss + nb;
+}
+
 static const bool _EscTab[256] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x00-0x0F
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x10-0x1F
@@ -248,7 +311,7 @@ static always_inline uint8_t escape_mask4(const char *sp) {
     return _EscTab[*(uint8_t *)(sp)] | (_EscTab[*(uint8_t *)(sp + 1)] << 1) | (_EscTab[*(uint8_t *)(sp + 2)] << 2) | (_EscTab[*(uint8_t *)(sp + 3)]  << 3);
 }
 
-static always_inline ssize_t memcchr_quote_unsafe(const char *sp, ssize_t nb, char *dp, const quoted_t * tab) {
+static always_inline ssize_t memcchr_quote_unsafe(const char *sp, ssize_t nb, char *dp, const quoted_t * tab, const char *replacement) {
     uint32_t     mm;
     const char * ds = dp;
     size_t cn = 0;
@@ -365,7 +428,14 @@ escape:
          * Note: dp always has at least 8 bytes (MAX_ESCAPED_BYTES) here.
          * so, we not use memcpy_p8(dp, tab[ch].s, nc);
          */
-        *(uint64_t *)dp = *(const uint64_t *)tab[ch].s;
+        if (unlikely(replacement && ch == '\0')) {
+            nc = 0;
+            for (const char *r = replacement; *r;) {
+                dp[nc++] = *r++;
+            }
+        } else {
+            *(uint64_t *)dp = *(const uint64_t *)tab[ch].s;
+        }
         sp++;
         nb--;
         dp += nc;

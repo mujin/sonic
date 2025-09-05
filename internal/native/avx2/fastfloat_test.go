@@ -22,6 +22,7 @@
 package avx2
 
 import (
+    `bytes`
     `encoding/json`
     `math`
     `math/rand`
@@ -63,6 +64,9 @@ func TestFastFloat_Random(t *testing.T) {
         jout, jerr := json.Marshal(f64)
         n := f64toa(&buf[0], f64)
         if jerr == nil {
+            if !bytes.ContainsRune(jout, '.') {
+              jout = append(jout, []byte(".0")...)
+            }
             assert.Equal(t, jout, buf[:n])
         } else {
             assert.True(t, n == 0)
@@ -72,6 +76,9 @@ func TestFastFloat_Random(t *testing.T) {
         jout, jerr = json.Marshal(f32)
         n = f32toa(&buf[0], f32)
         if jerr == nil {
+            if !bytes.ContainsRune(jout, '.') {
+              jout = append(jout, []byte(".0")...)
+            }
             assert.Equal(t, jout, buf[:n])
         } else {
             assert.True(t, n == 0)

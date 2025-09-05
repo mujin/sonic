@@ -834,15 +834,15 @@ var unmarshalTests = []unmarshalTest{
 
     {in: `0.000001`, ptr: new(float64), out: 0.000001, golden: true},
     {in: `1e-7`, ptr: new(float64), out: 1e-7, golden: true},
-    {in: `100000000000000000000`, ptr: new(float64), out: 100000000000000000000.0, golden: true},
+    {in: `100000000000000000000.0`, ptr: new(float64), out: 100000000000000000000.0, golden: true},
     {in: `1e+21`, ptr: new(float64), out: 1e21, golden: true},
     {in: `-0.000001`, ptr: new(float64), out: -0.000001, golden: true},
     {in: `-1e-7`, ptr: new(float64), out: -1e-7, golden: true},
-    {in: `-100000000000000000000`, ptr: new(float64), out: -100000000000000000000.0, golden: true},
+    {in: `-100000000000000000000.0`, ptr: new(float64), out: -100000000000000000000.0, golden: true},
     {in: `-1e+21`, ptr: new(float64), out: -1e21, golden: true},
-    {in: `999999999999999900000`, ptr: new(float64), out: 999999999999999900000.0, golden: true},
-    {in: `9007199254740992`, ptr: new(float64), out: 9007199254740992.0, golden: true},
-    {in: `9007199254740993`, ptr: new(float64), out: 9007199254740992.0, golden: false},
+    {in: `999999999999999900000.0`, ptr: new(float64), out: 999999999999999900000.0, golden: true},
+    {in: `9007199254740992.0`, ptr: new(float64), out: 9007199254740992.0, golden: true},
+    {in: `9007199254740993.0`, ptr: new(float64), out: 9007199254740992.0, golden: false},
 
     {
         in:  `{"V": {"F2": "hello"}}`,
@@ -1643,8 +1643,8 @@ var pallValueIndent = `{
     "Uint32": 0,
     "Uint64": 0,
     "Uintptr": 0,
-    "Float32": 0,
-    "Float64": 0,
+    "Float32": 0.0,
+    "Float64": 0.0,
     "bar": "",
     "bar2": "",
     "IntStr": "0",
@@ -2775,7 +2775,7 @@ type useInt64Test struct {
 
 type useFloatTest struct {
     in  string
-    out float64
+    out interface{}
 }
 
 var useinttest = []useInt64Test{
@@ -2793,11 +2793,11 @@ var useinttest = []useInt64Test{
 
 var usefloattest = []useFloatTest{
     // float64
-    {"-9223372036854775809", -9223372036854775809}, // int64 overflow
-    {"9223372036854775808", 9223372036854775808},   // int64 overflow
+    {"-9223372036854775809", float64(-9223372036854775809)}, // int64 overflow
+    {"9223372036854775808", uint64(9223372036854775808)},   // int64 overflow -> uint64
     {"1e2", 1e2},
     {"1e-20", 1e-20},
-    {"1.0", 1},
+    {"1.0", 1.0},
 }
 
 func TestUseInt64(t *testing.T) {

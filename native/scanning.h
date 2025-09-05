@@ -629,6 +629,7 @@ static always_inline ssize_t advance_string(const GoString *src, long p, int64_t
     ret->vt = t;    \
     ret->dv = 0.0;  \
     ret->iv = 0;    \
+    ret->uv = 0;    \
     ret->ep = *p;
 
 #define check_eof()         \
@@ -667,12 +668,16 @@ static always_inline ssize_t advance_string(const GoString *src, long p, int64_t
 #define is_digit(val) \
     '0' <= val && val <= '9'
 
-#define add_integer_to_mantissa(man, man_nd, exp10, dig) \
-    if (man_nd < 19) {                                   \
-        man = man * 10 + dig;                            \
-        man_nd++;                                        \
-    } else {                                             \
-        exp10++;                                         \
+#define add_integer_to_mantissa(man, man_nd, exp10, dig)                \
+    if (exp10 == 0) {                                                   \
+        if (man > ((uint64_t)-1)/10 || man*10 > ((uint64_t)-1)-dig) {   \
+            exp10++;                                                    \
+        } else {                                                        \
+            man = man * 10 + dig;                                       \
+            man_nd++;                                                   \
+        }                                                               \
+    } else {                                                            \
+        exp10++;                                                        \
     }
 
 #define add_float_to_mantissa(man, man_nd, exp10, dig) \
@@ -802,7 +807,7 @@ static bool always_inline is_overflow(uint64_t man, int sgn, int exp10) {
     /* the former exp10 != 0 means man has overflowed
      * the latter equals to man*sgn < INT64_MIN or > INT64_MAX */
     return exp10 != 0 ||
-        ((man >> 63) == 1 && ((uint64_t)sgn & man) != (1ull << 63));
+        (sgn < 0 ? (man > (1ull << 63)) : (man > (uint64_t)-1));
 }
 
 static always_inline void vnumber_1(const GoString *src, long *p, JsonState *ret) {
@@ -893,6 +898,10 @@ static always_inline void vnumber_1(const GoString *src, long *p, JsonState *ret
     if (ret->vt == V_INTEGER) {
         if (!is_overflow(man, sgn, exp10)) {
             ret->iv = (int64_t)man * sgn;
+            // greater than INT64_MAX, use uint64 instead
+            if (sgn > 0 && man >= (1ull << 63)) {
+                ret->uv = ret->iv;
+            }
 
             /* following lines equal to ret->dv = (double)(man) * sgn */
             ret->dv = (double)(man);

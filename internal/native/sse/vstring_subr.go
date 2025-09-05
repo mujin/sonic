@@ -8,15 +8,15 @@ import (
 )
 
 const (
-    _entry__vstring = 48
+    _entry__vstring = 64
 )
 
 const (
-    _stack__vstring = 104
+    _stack__vstring = 112
 )
 
 const (
-    _size__vstring = 2396
+    _size__vstring = 2736
 )
 
 var (
@@ -28,15 +28,15 @@ var (
         {0xc, 32},
         {0xd, 40},
         {0x11, 48},
-        {0x8b1, 104},
-        {0x8b2, 48},
-        {0x8b4, 40},
-        {0x8b6, 32},
-        {0x8b8, 24},
-        {0x8ba, 16},
-        {0x8bb, 8},
-        {0x8bc, 0},
-        {0x95c, 104},
+        {0x9f3, 112},
+        {0x9f4, 48},
+        {0x9f6, 40},
+        {0x9f8, 32},
+        {0x9fa, 24},
+        {0x9fc, 16},
+        {0x9fd, 8},
+        {0x9fe, 0},
+        {0xab0, 112},
     }
 )
 

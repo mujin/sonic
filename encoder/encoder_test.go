@@ -210,6 +210,51 @@ func TestEncoder_EscapeHTML(t *testing.T) {
     }
 }
 
+func TestEncoder_FloatWithDecimalPoint(t *testing.T) {
+	// test data from libfuzzer
+	for index, test := range []struct {
+		input  interface{}
+		expect string
+	}{
+		{float32(0), "0.0"},
+		{float32(1), "1.0"},
+		{float32(1000000), "1000000.0"},
+		{float64(0), "0.0"},
+		{float64(1), "1.0"},
+		{float64(1000000), "1000000.0"},
+	} {
+		buf, err := Encode(test.input, 0)
+		if err != nil {
+			t.Fatalf("case %d encoder replace null failed: %s", index, err)
+		}
+		require.Equal(t, test.expect, string(buf), "case %d", index)
+	}
+}
+
+func TestEncoder_ReplaceNulls(t *testing.T) {
+	// test data from libfuzzer
+	for index, test := range []struct {
+		opts   Options
+		input  interface{}
+		expect string
+	}{
+		{0, "hello\x00\x00world", `"hello\u0000\u0000world"`},
+		{0, "hello\x00\x01world", `"hello\u0000\u0001world"`},
+		{0, []string{"foo\x00", "bar\x00"}, `["foo\u0000","bar\u0000"]`},
+		{0, map[string]interface{}{"foo\x00": "bar\x00"}, `{"foo\u0000":"bar\u0000"}`},
+		{ReplaceNulls, "hello\x00\x00world", "\"hello\uFFFD\uFFFDworld\""},
+		{ReplaceNulls, "hello\x00\x01world", "\"hello\uFFFD\\u0001world\""},
+		{ReplaceNulls, []string{"foo\x00", "bar\x00"}, "[\"foo\uFFFD\",\"bar\uFFFD\"]"},
+		{ReplaceNulls, map[string]interface{}{"foo\x00": "bar\x00"}, "{\"foo\uFFFD\":\"bar\uFFFD\"}"},
+	} {
+		buf, err := Encode(test.input, test.opts)
+		if err != nil {
+			t.Fatalf("case %d encoder replace null failed: %s", index, err)
+		}
+		require.Equal(t, test.expect, string(buf), "case %d", index)
+	}
+}
+
 func TestEncoder_Marshal_EscapeHTML_LargeJson(t *testing.T) {
     buf1, err1 := Encode(&_BindingValue, SortMapKeys | EscapeHTML)
     require.NoError(t, err1)

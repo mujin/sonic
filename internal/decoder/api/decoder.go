@@ -37,6 +37,8 @@ const (
 	_F_validate_string = consts.F_validate_string
     _F_case_sensitive = consts.F_case_sensitive
 
+	_F_replace_nulls = consts.F_replace_nulls
+
 	_MaxStack = consts.MaxStack
 
 	OptionUseInt64 	       = consts.OptionUseInt64
@@ -47,6 +49,8 @@ const (
     OptionValidateString   = consts.OptionValidateString
     OptionNoValidateJSON   = consts.OptionNoValidateJSON
     OptionCaseSensitive    = consts.OptionCaseSensitive
+
+    OptionReplaceNulls     = consts.OptionReplaceNulls
 )
 
 type (

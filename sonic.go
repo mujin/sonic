@@ -69,6 +69,9 @@ func (cfg Config) Froze() API {
     if cfg.EncodeNullForInfOrNan {
         api.encoderOpts |= encoder.EncodeNullForInfOrNan
     }
+    if cfg.ReplaceNulls {
+        api.encoderOpts |= encoder.ReplaceNulls
+    }
 
     // configure decoder options:
     if cfg.NoValidateJSONSkip {
@@ -91,6 +94,9 @@ func (cfg Config) Froze() API {
     }
     if cfg.CaseSensitive {
         api.decoderOpts |= decoder.OptionCaseSensitive
+    }
+    if cfg.ReplaceNulls {
+        api.decoderOpts |= decoder.OptionReplaceNulls
     }
     return api
 }

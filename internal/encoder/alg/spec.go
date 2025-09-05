@@ -61,7 +61,7 @@ func Valid(data []byte) (ok bool, start int) {
 
 var typeByte = rt.UnpackEface(byte(0)).Type
 
-func Quote(buf []byte, val string, double bool) []byte {
+func Quote(buf []byte, val string, double bool, replaceNulls bool) []byte {
 	if len(val) == 0 {
 		if double {
 			return append(buf, `"\"\""`...)
@@ -80,16 +80,20 @@ func Quote(buf []byte, val string, double bool) []byte {
 	buf = rt.GuardSlice2(buf, nb+1)
 	b := (*rt.GoSlice)(unsafe.Pointer(&buf))
 
+	opts := uint64(0)
+	if double {
+		opts = types.F_DOUBLE_UNQUOTE
+	}
+	if replaceNulls {
+		opts |= types.F_REPLACE_NULLS
+	}
+
 	// input buffer
 	for nb > 0 {
 		// output buffer
 		dp := unsafe.Pointer(uintptr(b.Ptr) + uintptr(b.Len))
 		dn := b.Cap - b.Len
 		// call native.Quote, dn is byte count it outputs
-		opts := uint64(0)
-		if double {
-			opts = types.F_DOUBLE_UNQUOTE
-		}
 		ret := native.Quote(sp, nb, dp, &dn, opts)
 		// update *buf length
 		b.Len += dn
@@ -156,7 +160,7 @@ func HtmlEscape(dst []byte, src []byte) []byte {
 
 func F64toa(buf []byte, v float64) ([]byte) {
 	if v == 0 {
-		return append(buf, '0')
+		return append(buf, []byte("0.0")...)
 	}
 	buf = rt.GuardSlice2(buf, 64)
 	ret := native.F64toa((*byte)(rt.IndexByte(buf, len(buf))), v)
@@ -169,7 +173,7 @@ func F64toa(buf []byte, v float64) ([]byte) {
 
 func F32toa(buf []byte, v float32) ([]byte) {
 	if v == 0 {
-		return append(buf, '0')
+		return append(buf, []byte("0.0")...)
 	}
 	buf = rt.GuardSlice2(buf, 64)
 	ret := native.F32toa((*byte)(rt.IndexByte(buf, len(buf))), v)

@@ -28,6 +28,7 @@ const (
 	_F_no_validate_json = consts.F_no_validate_json
 	_F_validate_string = consts.F_validate_string
     _F_case_sensitive = consts.F_case_sensitive
+	_F_replace_nulls = consts.F_replace_nulls
 )
 
 var (

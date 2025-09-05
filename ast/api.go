@@ -34,7 +34,7 @@ import (
 var typeByte = rt.UnpackEface(byte(0)).Type
 
 func quote(buf *[]byte, val string) {
-    *buf = alg.Quote(*buf, val, false)
+    *buf = alg.Quote(*buf, val, false, false)
 }
 
 func (self *Parser) decodeValue() (val types.JsonState) {

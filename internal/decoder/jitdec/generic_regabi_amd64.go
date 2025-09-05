@@ -45,7 +45,7 @@ const (
     _VD_args   = 8      // 8 bytes  for passing arguments to this functions
     _VD_fargs  = 64     // 64 bytes for passing arguments to other Go functions
     _VD_saves  = 48     // 48 bytes for saving the registers before CALL instructions
-    _VD_locals = 96     // 96 bytes for local variables
+    _VD_locals = 104    // 104 bytes for local variables
 )
 
 const (
@@ -65,20 +65,21 @@ var (
     _VAR_ss_Ep = jit.Ptr(_SP, _VD_fargs + _VD_saves + 32)
     _VAR_ss_Db = jit.Ptr(_SP, _VD_fargs + _VD_saves + 40)
     _VAR_ss_Dc = jit.Ptr(_SP, _VD_fargs + _VD_saves + 48)
+    _VAR_ss_Uv = jit.Ptr(_SP, _VD_fargs + _VD_saves + 56)
 )
 
 var (
-    _VAR_R9 = jit.Ptr(_SP, _VD_fargs + _VD_saves + 56)
+    _VAR_R9 = jit.Ptr(_SP, _VD_fargs + _VD_saves + 64)
 )
 type _ValueDecoder struct {
     jit.BaseAssembler
 }
 
 var (
-    _VAR_cs_LR = jit.Ptr(_SP, _VD_fargs + _VD_saves + 64)
-    _VAR_cs_p = jit.Ptr(_SP, _VD_fargs + _VD_saves + 72)
-    _VAR_cs_n = jit.Ptr(_SP, _VD_fargs + _VD_saves + 80)
-    _VAR_cs_d = jit.Ptr(_SP, _VD_fargs + _VD_saves + 88)
+    _VAR_cs_LR = jit.Ptr(_SP, _VD_fargs + _VD_saves + 72)
+    _VAR_cs_p = jit.Ptr(_SP, _VD_fargs + _VD_saves + 80)
+    _VAR_cs_n = jit.Ptr(_SP, _VD_fargs + _VD_saves + 88)
+    _VAR_cs_d = jit.Ptr(_SP, _VD_fargs + _VD_saves + 96)
 )
 
 func (self *_ValueDecoder) build() uintptr {
@@ -183,6 +184,7 @@ var (
     _T_map     = jit.Type(reflect.TypeOf((map[string]interface{})(nil)))
     _T_bool    = jit.Type(reflect.TypeOf(false))
     _T_int64   = jit.Type(reflect.TypeOf(int64(0)))
+    _T_uint64  = jit.Type(reflect.TypeOf(uint64(0)))
     _T_eface   = jit.Type(reflect.TypeOf((*interface{})(nil)).Elem())
     _T_slice   = jit.Type(reflect.TypeOf(([]interface{})(nil)))
     _T_string  = jit.Type(reflect.TypeOf(""))
@@ -211,6 +213,7 @@ func (self *_ValueDecoder) compile() {
     self.Emit("MOVQ", jit.Imm(_MaxDigitNums), _VAR_ss_Dc)       // MOVQ $_MaxDigitNums, ss.Dcap
     self.Emit("LEAQ", jit.Ptr(_ST, _DbufOffset), _AX)           // LEAQ _DbufOffset(ST), AX
     self.Emit("MOVQ", _AX, _VAR_ss_Db)                          // MOVQ AX, ss.Dbuf
+    self.Emit("MOVQ", jit.Imm(0), _VAR_ss_Uv)                   // MOVQ $0, ss.Uv
     /* add ST offset */
     self.Emit("ADDQ", jit.Imm(_FsmOffset), _ST)                 // ADDQ _FsmOffset, _ST
     self.Emit("MOVQ", _CX, jit.Ptr(_ST, _ST_Sp))                // MOVQ CX, ST.Sp
@@ -468,6 +471,11 @@ func (self *_ValueDecoder) compile() {
     self.Emit("BTQ"  , jit.Imm(_F_disable_urc), _VAR_df)        // BTQ   ${_F_disable_urc}, fv
     self.Emit("SETCC", _R8)                                     // SETCC R8
     self.Emit("SHLQ" , jit.Imm(types.B_UNICODE_REPLACE), _R8)   // SHLQ  ${types.B_UNICODE_REPLACE}, R8
+    self.Emit("XORL" , _AX, _AX)                                // XORL   AX, AX
+    self.Emit("BTQ"  , jit.Imm(_F_replace_nulls), _VAR_df)      // BTQ    ${_F_replace_nulls}, fv
+    self.Emit("SETCS", _AX)                                     // SETCC  AX
+    self.Emit("SHLQ" , jit.Imm(types.B_REPLACE_NULLS), _AX)     // SHLQ   ${types.B_REPLACE_NULLS}, AX
+    self.Emit("ORQ"  , _AX, _R8)                                // ORQ    AX, R8
 
     /* unquote the string, with R9 been preserved */
     self.Emit("MOVQ", _R9, _VAR_R9)             // SAVE R9
@@ -527,6 +535,10 @@ func (self *_ValueDecoder) compile() {
     self.Emit("MOVQ", _VAR_ss_Iv, _AX)          // MOVQ    ss.Iv, AX
     self.call_go(_F_convT64)                    // CALL_GO runtime.convT64
     self.Emit("MOVQ", _T_int64, _R8)            // MOVQ    _T_int64, R8
+    self.Emit("CMPQ", _VAR_ss_Uv, jit.Imm(0))   // CMPQ ss.Uv, $0
+    self.Sjmp("JE" , "_use_int64_set_type_end") // JE _use_int64_set_type_end
+    self.Emit("MOVQ", _T_uint64, _R8)           // MOVQ _T_uint64, R8
+    self.Link("_use_int64_set_type_end")        // _use_int64_set_type_end:
     self.Emit("MOVQ", _AX, _R9)                 // MOVQ    AX, R9
     self.Emit("MOVQ", _VAR_ss_Ep, _DI)          // MOVQ    ss.Ep, DI
     self.Sjmp("JMP" , "_set_value")             // JMP     _set_value

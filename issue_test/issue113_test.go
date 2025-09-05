@@ -79,7 +79,7 @@ var issue13ExpectedNonemptyOpt = `{
  "uint16": 16,
  "uint32": 32,
  "uint64": 64,
- "float32": 1,
+ "float32": 1.0,
  "float64": -2.34e+64,
  "uintptr": 1,
  "string": "string",
@@ -94,7 +94,7 @@ var issue13ExpectedNonemptyOpt = `{
   "0": "zero"
  },
  "map": {
-  "key": 0
+  "key": 0.0
  },
  "slice0": [
   0
