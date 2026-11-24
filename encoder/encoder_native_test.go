@@ -56,7 +56,7 @@ func TestEncOnlyOmitNilPtr(t *testing.T) {
 		d := data{}
 		js, err := Encode(d, 0)
 		require.NoError(t, err)
-		require.Equal(t, `{"BoolVal":false,"IntVal":0,"StrVal":"","FloatVal":0,"NonOmitPtr":null,"NonOmitVal":0,"NonOmitSlice":null}`, string(js))
+		require.Equal(t, `{"BoolVal":false,"IntVal":0,"StrVal":"","FloatVal":0.0,"NonOmitPtr":null,"NonOmitVal":0,"NonOmitSlice":null}`, string(js))
 	})
 
 	t.Run("zero containers", func(t *testing.T) {
@@ -71,7 +71,7 @@ func TestEncOnlyOmitNilPtr(t *testing.T) {
 		}
 		js, err := Encode(d, 0)
 		require.NoError(t, err)
-		require.Equal(t, `{"BoolVal":false,"IntVal":0,"StrVal":"","FloatVal":0,"SliceVal":[],"MapVal":{},"Any":{},"NonOmitPtr":null,"NonOmitVal":0,"NonOmitSlice":[]}`, string(js))
+		require.Equal(t, `{"BoolVal":false,"IntVal":0,"StrVal":"","FloatVal":0.0,"SliceVal":[],"MapVal":{},"Any":{},"NonOmitPtr":null,"NonOmitVal":0,"NonOmitSlice":[]}`, string(js))
 	})
 }
 
