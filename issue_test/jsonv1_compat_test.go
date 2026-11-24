@@ -1,11 +1,14 @@
-/**
- * Copyright 2024 ByteDance Inc.
+//go:build !goexperiment.jsonv2
+// +build !goexperiment.jsonv2
+
+/*
+ * Copyright 2021 ByteDance Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,18 +17,10 @@
  * limitations under the License.
  */
 
-package neon
+package issue_test
 
-import (
-	"unsafe"
-
-	"github.com/bytedance/sonic/internal/rt"
-)
-
-//go:nosplit
-func lookup_small_key(key *string, table *[]byte, lowerOff int) (ret int) {
-    return __lookup_small_key(rt.NoEscape(unsafe.Pointer(key)), rt.NoEscape(unsafe.Pointer(table)), lowerOff)
-}
-
-//go:nosplit
-func __lookup_small_key(key unsafe.Pointer, table unsafe.Pointer, lowerOff int) (ret int)
+// stdUsesJSONV2 reports whether the standard library encoding/json package is
+// using the json v2 backend. It is false here: either Go < 1.27, or the
+// experiment was disabled with GOEXPERIMENT=nojsonv2. See
+// docs/sonic-go127-compatibility.md.
+const stdUsesJSONV2 = false
